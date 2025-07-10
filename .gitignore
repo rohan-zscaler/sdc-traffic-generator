@@ -1,0 +1,17 @@
+# Ignore environment and sensitive config files
+.env
+.env.*
+*.crt
+*.pem
+*.key
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Docker artifacts
+*.log
+*.pid
+
+# macOS files
+.DS_Store

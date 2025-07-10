@@ -1,0 +1,31 @@
+# ipsec.conf - strongSwan IPsec configuration file
+
+# basic configuration
+
+config setup
+        # strictcrlpolicy=yes
+        # uniqueids = no
+
+# Add connections here.
+conn %default
+        ikelifetime=120m
+        keyingtries=1
+        keyexchange=ikev2
+        ike=aes128-sha1-modp1024!
+        esp=null-md5!
+        aggressive=yes
+        lifetime=60m
+        auto=route
+        dpdaction=restart
+        dpddelay=30s
+        dpdtimeout=150s
+
+conn $ZSCALER_CLOUD
+        left=%defaultroute
+        leftid=$VPN_USERNAME
+	leftsubnet=$DOCKER_SUBNET
+	#leftupdown=/strongswan-updown.sh
+
+        right=$VPN_ADDRESS
+        rightsubnet=0.0.0.0/0
+        authby=secret

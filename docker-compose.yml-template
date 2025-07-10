@@ -1,0 +1,82 @@
+x-logging:
+  &default-logging
+  driver: 'json-file'
+  options:
+    max-size: '10m'
+    max-file: '3'
+
+services:
+
+  vpngateway:
+    image: vpngateway:latest
+    container_name: vpngateway
+    restart: unless-stopped
+    privileged: true
+    logging: *default-logging
+    env_file:
+    - .env
+    networks:
+      vpn:
+        ipv4_address: ${DOCKER_VPN_GATEWAY_IP}
+
+  webcrawler1:
+    image: webcrawler:latest
+    container_name: webcrawler1
+    hostname: webcrawler1
+    restart: always
+    logging: *default-logging
+    cap_add:
+      - NET_ADMIN    
+    env_file:
+    - .env
+    environment:
+    - "USERS=[{'username': 'danny.douglas@thezerotrustexchange.com'}]"
+    depends_on:
+    - vpngateway
+    networks:
+      vpn:
+        ipv4_address: ${DOCKER_NETWORK_SUBNET}.81
+
+  webcrawler2:
+    image: webcrawler:latest
+    container_name: webcrawler2
+    hostname: webcrawler2
+    restart: always
+    logging: *default-logging
+    cap_add:
+      - NET_ADMIN    
+    env_file:
+    - .env
+    environment:
+    - "USERS=[{'username': 'kristen.clark@thezerotrustexchange.com'}]"
+    depends_on:
+    - vpngateway
+    networks:
+      vpn:
+        ipv4_address: ${DOCKER_NETWORK_SUBNET}.82
+
+  webcrawler3:
+    image: webcrawler:latest
+    container_name: webcrawler3
+    hostname: webcrawler3
+    restart: always
+    logging: *default-logging
+    cap_add:
+      - NET_ADMIN    
+    env_file:
+    - .env
+    environment:
+    - "USERS=[{'username': 'frank.fox@thezerotrustexchange.com'}]"
+    depends_on:
+    - vpngateway
+    networks:
+      vpn:
+        ipv4_address: ${DOCKER_NETWORK_SUBNET}.83
+
+networks:
+  vpn:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DOCKER_NETWORK_SUBNET}.0/${DOCKER_NETWORK_CIDR}
+          gateway: ${DOCKER_NETWORK_SUBNET}.1
